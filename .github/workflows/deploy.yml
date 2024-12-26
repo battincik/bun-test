@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy to gold.vm.coreor.net
 
 on:
   push:
@@ -13,18 +13,18 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install Bun
+    - name: Setup SSH
       run: |
-        curl https://bun.sh/install | bash
-        echo "export BUN_INSTALL=~/.bun" >> ~/.bashrc
-        echo "export PATH=$BUN_INSTALL/bin:$PATH" >> ~/.bashrc
-        source ~/.bashrc
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H gold.vm.coreor.net >> ~/.ssh/known_hosts
 
-    - name: Install Dependencies
-      run: bun install
-
-    - name: Restart PM2
+    - name: Deploy to Server
       run: |
-        pm2 stop bun-test || true
-        pm2 start src/index.ts --interpreter=bun --name bun-test
-        pm2 save
+        ssh battincik@gold.vm.coreor.net "
+        cd /coreor-apps/bun-test &&
+        git pull origin prod &&
+        bun install &&
+        pm2 restart bun-test
+        "
