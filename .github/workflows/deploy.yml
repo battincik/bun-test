@@ -23,8 +23,10 @@ jobs:
     - name: Deploy to Server
       run: |
         ssh battincik@gold.vm.coreor.net "
+        export BUN_INSTALL=~/.bun &&
+        export PATH=$BUN_INSTALL/bin:$PATH &&
         cd ~/coreor-apps/bun-test &&
         git pull origin prod &&
         ~/.bun/bin/bun install &&
-        pm2 restart bun-test
+        ~/.bun/bin/pm2 restart bun-test
         "
