@@ -25,6 +25,6 @@ jobs:
         ssh battincik@gold.vm.coreor.net "
         cd ~/coreor-apps/bun-test &&
         git pull origin prod &&
-        bun install &&
+        ~/.bun/bin/bun install &&
         pm2 restart bun-test
         "
