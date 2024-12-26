@@ -1,0 +1,30 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install Bun
+      run: |
+        curl https://bun.sh/install | bash
+        echo "export BUN_INSTALL=~/.bun" >> ~/.bashrc
+        echo "export PATH=$BUN_INSTALL/bin:$PATH" >> ~/.bashrc
+        source ~/.bashrc
+
+    - name: Install Dependencies
+      run: bun install
+
+    - name: Restart PM2
+      run: |
+        pm2 stop bun-test || true
+        pm2 start src/index.ts --interpreter=bun --name bun-test
+        pm2 save
