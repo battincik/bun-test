@@ -23,7 +23,7 @@ jobs:
     - name: Deploy to Server
       run: |
         ssh battincik@gold.vm.coreor.net "
-        cd /coreor-apps/bun-test &&
+        cd ~/coreor-apps/bun-test &&
         git pull origin prod &&
         bun install &&
         pm2 restart bun-test
